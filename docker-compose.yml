@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  typo3:
+    image: martinhelmich/typo3:13
+    ports:
+      - "80:80"
+    environment:
+      TYPO3_DB_HOST: postgres
+      TYPO3_DB_PORT: 5432
+      TYPO3_DB_NAME: typo3
+      TYPO3_DB_USER: typo3
+      TYPO3_DB_PASSWORD: contraseña_db_segura
+      TYPO3_ADMIN_USER: admin
+      TYPO3_ADMIN_PASSWORD: contraseña_admin_segura
+      TZ: Europe/Madrid
+    depends_on:
+      - postgres
+    volumes:
+      - ./fileadmin:/var/www/html/fileadmin
+      - ./typo3conf:/var/www/html/typo3conf
+      - ./typo3temp:/var/www/html/typo3temp
+    networks:
+      - typo3-net
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: typo3
+      POSTGRES_USER: typo3
+      POSTGRES_PASSWORD: contraseña_db_segura
+      TZ: Europe/Madrid
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - typo3-net
+
+volumes:
+  postgres_data:
+
+networks:
+  typo3-net:
